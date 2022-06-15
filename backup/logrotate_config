@@ -1,0 +1,12 @@
+/opt/log/sausage-store.log {
+  rotate 3
+  hourly
+  compress
+  size 10M
+  dateext
+  dateformat -%Y%m%d-%s
+  create
+  postrotate
+      date >> /opt/student_rotate.log
+  endscript
+}
