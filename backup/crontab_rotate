@@ -20,5 +20,5 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 47 6    * * 7   root    test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.weekly )
 52 6    1 * *   root    test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.monthly )
 
-0 0 * * * user-backup find /opt/backup/ -name "sausage-store.jar" -type f | sort | head -30 | xargs -d "\\n" dirname | xargs rm -rf
+0 0 * * * user-backup find /opt/backup/ -name "sausage-store.jar" -type f | sort | head -n -30 | xargs -d "\\n" dirname || xargs rm -rf
 #
