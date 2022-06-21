@@ -1,0 +1,16 @@
+###############################
+#   Installing Sausage-Store  #
+###############################
+
+---
+- name: "Installing Sausage-Store-Backend"
+  hosts: "backend"
+
+  roles:
+  - backend
+
+- name: "Installing Sausage-Store-Frontend"
+  hosts:  "frontend"
+
+  roles:
+  - frontend

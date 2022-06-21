@@ -1,0 +1,63 @@
+---
+- name: Run the equivalent of "apt-get update"
+  apt:
+     update_cache: yes
+  become: true
+
+- name: Ansible shell module multiple commands
+  shell: "curl -fsSL https://deb.nodesource.com/setup_16.x | bash -"
+  become: true
+
+- name: Install NodeJs and npm
+  apt:
+    pkg:
+    - nodejs
+    - acl
+    state: present
+  become: true
+
+- name: Install "http-server" npm package.
+  community.general.npm:
+    name: http-server
+    global: yes
+  become: true
+
+- name: Creates frontend directory
+  file:
+    path: "/var/www-data/"
+    state: directory
+    mode: 0755
+  become: true
+
+- name: Download artifact from Nexus
+  get_url:
+    dest: "/var/www-data/sausage-store-1.0.80343.tar.gz"
+    url: "https://nexus.praktikum-services.ru/repository/sausage-store-Alekseev-Anton-frontend/sausage-store-front/sausage-store/1.0.80343/sausage-store-1.0.80343.tar.gz"
+    url_username: ""
+    url_password: ""
+    mode: u=rwx,g=r,o=r
+  become: true
+
+- name: Extract front archive
+  ansible.builtin.unarchive:
+    src: "/var/www-data/sausage-store-1.0.80343.tar.gz"
+    dest: "/var/www-data/"
+    remote_src: yes
+  become: true
+
+- name: Create Unit file
+  template:
+    src: sausage-store-frontend.service.j2
+    dest: /etc/systemd/system/sausage-store-frontend.service
+  become: true
+
+- name: Reload Systemd
+  systemd:
+    daemon_reload: yes
+  become: true
+
+- name: Start sausage-store-frontend
+  service:
+    name: sausage-store-frontend
+    state: started
+  become: true

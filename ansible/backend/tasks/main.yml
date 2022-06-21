@@ -1,0 +1,75 @@
+---
+# java
+- name: install openjdk-16
+  ansible.builtin.apt:
+    name: "openjdk-16-jre-headless"
+    force: yes
+    state: "present"
+    update_cache: true
+  become: true
+
+# libc6-i386
+- name: install libc6
+  ansible.builtin.apt:
+    name: "libc6-i386"
+    force: yes
+    state: "present"
+    update_cache: true
+  become: true
+
+# python3-lxml
+- name: python3-lxml
+  ansible.builtin.apt:
+    name: "python3-lxml"
+    force: yes
+    state: "present"
+    update_cache: true
+  become: true
+
+# Create directory
+- name: Creates directory
+  ansible.builtin.file:
+    path: "/opt/sausage-store/backend/lib/"
+    state: "directory"
+    mode: "0775"
+  become: true
+
+# Clear old file
+- name: Clear old file jar
+  file:
+    path: /opt/sausage-store/backend/lib/sausage-store.jar
+    state: absent
+  become: true
+
+# Download artifact from Nexus
+- name: Download artifact from Nexus
+  ansible.builtin.maven_artifact:
+    dest: "/opt/sausage-store/backend/lib/sausage-store.jar"
+    repository_url: "https://nexus.praktikum-services.ru/repository/sausage-store-Alekseev-Anton-backend/"
+    group_id: "com.yandex.practicum.devops"
+    artifact_id: "sausage-store"
+    version: "1.0.90144"
+    username: ""
+    password: ""
+    mode: "0755"
+  become: true
+
+# Create sauage-store-backend.service
+- name: Create sauage-store-backend.service
+  ansible.builtin.template:
+    src: sausage-store-backend.service.j2
+    dest: /etc/systemd/system/sausage-store-backend.service
+  become: true
+
+# Update systemd
+- name: Update Systemd
+  ansible.builtin.systemd:
+    daemon_reload: yes
+  become: true
+
+# Run Backend
+- name: Run Backend
+  ansible.builtin.service:
+    name: "sausage-store-backend"
+    state: restarted
+  become: true

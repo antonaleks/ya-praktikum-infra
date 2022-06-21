@@ -21,3 +21,15 @@ resource "yandex_compute_instance" "vm-1" {
     user-data = "${file("../resources/meta.txt")}"
   }
 }
+
+resource "local_file" "ansible_inventory" {
+  content = templatefile("../resources/inventory.tmpl",
+    {
+      backend_vm_ip_nat  = yandex_compute_instance.vm-1[0].network_interface.0.nat_ip_address,
+      frontend_vm_ip_nat = yandex_compute_instance.vm-1[1].network_interface.0.nat_ip_address
+      backend_vm_ip      = yandex_compute_instance.vm-1[0].network_interface.0.ip_address,
+      frontend_vm_ip     = yandex_compute_instance.vm-1[1].network_interface.0.ip_address
+    }
+  )
+  filename = "../../ansible/inventory"
+}
