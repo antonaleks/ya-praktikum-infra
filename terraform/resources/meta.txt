@@ -1,0 +1,8 @@
+#cloud-config
+users:
+  - name: ansible
+    groups: sudo
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCvFaO9CdjZ7TrrSPemngxBza9d3TCzAqE6clYHK7o5ZVGOkR9jED0Znqt1JKUlSx7MVBNJLqIzYkmIsk1I6aTCLaHO/l0Blz07x3h6/LjKEK2XOeckjt74/gaABPcIvAnSE1FVFFnFHrxOKXPuylZJutAW6tjKN74ZJqQxwQEHQFPLwUphSPqbjq+z6TGvwnI6VZw7cUaUdDr+GJ5zZeRl4LWNXv2SL+apTx3Zn8it45+oEsJzYYPPqUYMnnPbfcNw5cSO1Dq33HC+3+QbQnlhHc9klOK+WWE096HD4+2Ek9nWISn3wsz75TyBa8nUHvJ7ASAc4RzXn2LGBwPRvJeUWFNKgqbBN8zti5ezKVhuTLeCS8IVIO85h8NqJBiFRaQvNrR3LSSrLd24Zi8s1EtlkUcmhHal+RAGcPqi9FwaR+6pfH7NLd4PIpW5EDLQ5rdhnP4KFYgTvSTsc75goxBKQ8+55ioHQqLDIVanUm7CFSwIAwZLI8NceOmHrIVJ2k8= infra-service@admin-instance
