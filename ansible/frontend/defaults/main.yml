@@ -1,0 +1,20 @@
+---
+# defaults file for frontend
+artifact:
+  path: "/var/www-data/"
+  name: "sausage-store-{{nexus.version}}"
+  ext: ".tar.gz"
+  store: "/tmp/"
+
+nexus:
+  repository_url: "https://nexus.praktikum-services.ru/repository/sausage-store-Alekseev-Anton-frontend/sausage-store-front/sausage-store/"
+  version: "1.0.80343"
+
+user:
+  name: www-data
+
+service:
+  name: "sausage-store-frontend"
+  front_http_port: 80
+  private_backend_ip: "{{private_backend_ip}}"
+  private_backend_port: 8080

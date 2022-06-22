@@ -5,12 +5,24 @@
 ---
 - name: "Installing Sausage-Store-Backend"
   hosts: "backend"
+  vars_prompt:
+    - name: nexus_username
+      prompt: "Insert login for nexus repo"
+      private: no
+    - name: nexus_password
+      prompt: "Insert password for nexus repo"
 
   roles:
   - backend
 
 - name: "Installing Sausage-Store-Frontend"
   hosts:  "frontend"
+  vars_prompt:
+    - name: nexus_username
+      prompt: "Insert login for nexus repo"
+      private: no
+    - name: nexus_password
+      prompt: "Insert password for nexus repo"
 
   roles:
   - frontend

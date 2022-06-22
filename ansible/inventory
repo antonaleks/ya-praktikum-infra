@@ -1,0 +1,6 @@
+# comment
+[backend]
+51.250.81.239 private_backend_ip=10.128.0.136
+
+[frontend]
+51.250.76.210 private_backend_ip=10.128.0.136

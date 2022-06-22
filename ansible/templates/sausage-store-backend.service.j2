@@ -2,16 +2,16 @@
 Description=sausage-store
 
 [Service]
-User=ansible
+User={{user.name}}
 Restart=always
 ExecStart=/usr/bin/java -Xrs \
--Dmyserver.basePath='/opt/sausage-store/backend/lib/' \
--Dmyserver.bindAddr='10.128.0.149' \
--Dmyserver.bindPort='8080' \
+-Dmyserver.basePath={{artifact.path}} \
+-Dmyserver.bindAddr={{private_backend_ip}} \
+-Dmyserver.bindPort={{service.private_backend_port}} \
 -Dspring.datasource.url='' \
 -Dspring.datasource.username='' \
 -Dspring.datasource.password='' \
--jar /opt/sausage-store/backend/lib/sausage-store.jar
+-jar {{artifact.path+artifact.name}}
 
 [Install]
 WantedBy=multi-user.target

@@ -26,31 +26,37 @@
     update_cache: true
   become: true
 
+- name: Creating backend service user
+  user:
+    name: "{{ user.name }}"
+  become: true
+
 # Create directory
 - name: Creates directory
   ansible.builtin.file:
-    path: "/opt/sausage-store/backend/lib/"
+    path: "{{artifact.path}}"
     state: "directory"
     mode: "0775"
+    owner: "{{ user.name }}"
   become: true
 
-# Clear old file
-- name: Clear old file jar
-  file:
-    path: /opt/sausage-store/backend/lib/sausage-store.jar
-    state: absent
-  become: true
+## Clear old file
+#- name: Clear old file jar
+#  file:
+#    path: "{{artifact.path+artifact.name}}"
+#    state: absent
+#  become: true
 
 # Download artifact from Nexus
 - name: Download artifact from Nexus
   ansible.builtin.maven_artifact:
-    dest: "/opt/sausage-store/backend/lib/sausage-store.jar"
-    repository_url: "https://nexus.praktikum-services.ru/repository/sausage-store-Alekseev-Anton-backend/"
-    group_id: "com.yandex.practicum.devops"
-    artifact_id: "sausage-store"
-    version: "1.0.90144"
-    username: ""
-    password: ""
+    dest: "{{artifact.path+artifact.name}}"
+    repository_url: "{{nexus.repository_url}}"
+    group_id: "{{nexus.group_id}}"
+    artifact_id: "{{nexus.artifact_id}}"
+    version: "{{nexus.version}}"
+    username: "{{nexus_username}}"
+    password: "{{nexus_password}}"
     mode: "0755"
   become: true
 
@@ -58,7 +64,7 @@
 - name: Create sauage-store-backend.service
   ansible.builtin.template:
     src: sausage-store-backend.service.j2
-    dest: /etc/systemd/system/sausage-store-backend.service
+    dest: "/etc/systemd/system/{{service.name}}.service"
   become: true
 
 # Update systemd
@@ -70,6 +76,10 @@
 # Run Backend
 - name: Run Backend
   ansible.builtin.service:
-    name: "sausage-store-backend"
+    name: "{{service.name}}"
     state: restarted
+  register: backend_service_status
   become: true
+
+- debug:
+    var: backend_service_status.status.ActiveState

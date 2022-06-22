@@ -2,11 +2,11 @@
 Description=sausage-store-frontend
 
 [Service]
-User=ansible
+User={{user.name}}
 AmbientCapabilities=CAP_NET_BIND_SERVICE
 
-ExecStart=http-server /var/www-data/sausage-store-1.0.80343/public_html/ -p 443 --proxy http://10.128.0.149:8080
-ExecReload=http-server /var/www-data/sausage-store-1.0.80343/public_html/ -p 443 --proxy http://10.128.0.149:8080
+ExecStart=http-server {{artifact.path+artifact.name}}/public_html/ -p {{service.front_http_port}} --proxy http://{{private_backend_ip}}:{{service.private_backend_port}}
+ExecReload=http-server {{artifact.path+artifact.name}}/public_html/ -p {{service.front_http_port}} --proxy http://{{private_backend_ip}}:{{service.private_backend_port}}
 Restart=always
 
 [Install]

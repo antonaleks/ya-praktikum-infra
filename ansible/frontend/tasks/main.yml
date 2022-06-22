@@ -20,35 +20,41 @@
   community.general.npm:
     name: http-server
     global: yes
-  become: true
+  become: yes
 
 - name: Creates frontend directory
   file:
-    path: "/var/www-data/"
+    path: "{{artifact.path}}"
     state: directory
     mode: 0755
+    owner: "{{ user.name }}"
   become: true
 
 - name: Download artifact from Nexus
   get_url:
-    dest: "/var/www-data/sausage-store-1.0.80343.tar.gz"
-    url: "https://nexus.praktikum-services.ru/repository/sausage-store-Alekseev-Anton-frontend/sausage-store-front/sausage-store/1.0.80343/sausage-store-1.0.80343.tar.gz"
-    url_username: ""
-    url_password: ""
+    dest: "{{artifact.store+artifact.name+artifact.ext}}"
+    url: "{{nexus.repository_url+nexus.version}}/{{artifact.name+artifact.ext}}"
+    url_username: "{{nexus_username}}"
+    url_password: "{{nexus_password}}"
     mode: u=rwx,g=r,o=r
-  become: true
 
 - name: Extract front archive
   ansible.builtin.unarchive:
-    src: "/var/www-data/sausage-store-1.0.80343.tar.gz"
-    dest: "/var/www-data/"
+    src: "{{artifact.store+artifact.name+artifact.ext}}"
+    dest: "{{artifact.path}}"
     remote_src: yes
   become: true
+
+# Clear old file
+- name: Clear old file jar
+  file:
+    path: "{{artifact.store+artifact.name+artifact.ext}}"
+    state: absent
 
 - name: Create Unit file
   template:
     src: sausage-store-frontend.service.j2
-    dest: /etc/systemd/system/sausage-store-frontend.service
+    dest: "/etc/systemd/system/{{service.name}}.service"
   become: true
 
 - name: Reload Systemd
@@ -58,6 +64,11 @@
 
 - name: Start sausage-store-frontend
   service:
-    name: sausage-store-frontend
+    name: "{{service.name}}"
     state: started
+  register: frontend_service_status
   become: true
+
+- debug:
+    var: frontend_service_status.status.ActiveState
+
