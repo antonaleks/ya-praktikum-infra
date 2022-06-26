@@ -1,5 +1,5 @@
 [backend]
-51.250.93.137 private_backend_ip=10.128.0.146
+51.250.86.232 private_backend_ip=10.128.0.57
 
 [frontend]
-51.250.92.198 private_backend_ip=10.128.0.146
+51.250.91.1 private_backend_ip=10.128.0.57
