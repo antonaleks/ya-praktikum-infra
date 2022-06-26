@@ -1,0 +1,19 @@
+---
+# defaults file for backend
+artifact:
+  path: "/opt/sausage-store/backend/lib/"
+  name: "sausage-store.jar"
+
+nexus:
+  repository_url: "https://nexus.praktikum-services.ru/repository/sausage-store-Alekseev-Anton-backend/"
+  group_id: "com.yandex.practicum.devops"
+  artifact_id: "sausage-store"
+  version: "1.0.90144"
+
+user:
+  name: jarservice
+
+service:
+  name: "sausage-store-backend"
+  private_backend_ip: "{{private_backend_ip}}"
+  private_backend_port: 8080

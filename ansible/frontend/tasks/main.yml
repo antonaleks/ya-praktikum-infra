@@ -1,0 +1,74 @@
+---
+- name: Run the equivalent of "apt-get update"
+  apt:
+     update_cache: yes
+  become: true
+
+- name: Ansible shell module multiple commands
+  shell: "curl -fsSL https://deb.nodesource.com/setup_16.x | bash -"
+  become: true
+
+- name: Install NodeJs and npm
+  apt:
+    pkg:
+    - nodejs
+    - acl
+    state: present
+  become: true
+
+- name: Install "http-server" npm package.
+  community.general.npm:
+    name: http-server
+    global: yes
+  become: yes
+
+- name: Creates frontend directory
+  file:
+    path: "{{artifact.path}}"
+    state: directory
+    mode: 0755
+    owner: "{{ user.name }}"
+  become: true
+
+- name: Download artifact from Nexus
+  get_url:
+    dest: "{{artifact.store+artifact.name+artifact.ext}}"
+    url: "{{nexus.repository_url+nexus.version}}/{{artifact.name+artifact.ext}}"
+    url_username: "{{nexus_username}}"
+    url_password: "{{nexus_password}}"
+    mode: u=rwx,g=r,o=r
+
+- name: Extract front archive
+  ansible.builtin.unarchive:
+    src: "{{artifact.store+artifact.name+artifact.ext}}"
+    dest: "{{artifact.path}}"
+    remote_src: yes
+  become: true
+
+# Clear old file
+- name: Clear old file jar
+  file:
+    path: "{{artifact.store+artifact.name+artifact.ext}}"
+    state: absent
+
+- name: Create Unit file
+  template:
+    src: sausage-store-frontend.service.j2
+    dest: "/etc/systemd/system/{{service.name}}.service"
+  become: true
+
+- name: Reload Systemd
+  systemd:
+    daemon_reload: yes
+  become: true
+
+- name: Start sausage-store-frontend
+  service:
+    name: "{{service.name}}"
+    state: started
+  register: frontend_service_status
+  become: true
+
+- debug:
+    var: frontend_service_status.status.ActiveState
+

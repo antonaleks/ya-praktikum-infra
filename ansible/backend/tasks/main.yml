@@ -1,0 +1,85 @@
+---
+# java
+- name: install openjdk-16
+  ansible.builtin.apt:
+    name: "openjdk-16-jre-headless"
+    force: yes
+    state: "present"
+    update_cache: true
+  become: true
+
+# libc6-i386
+- name: install libc6
+  ansible.builtin.apt:
+    name: "libc6-i386"
+    force: yes
+    state: "present"
+    update_cache: true
+  become: true
+
+# python3-lxml
+- name: python3-lxml
+  ansible.builtin.apt:
+    name: "python3-lxml"
+    force: yes
+    state: "present"
+    update_cache: true
+  become: true
+
+- name: Creating backend service user
+  user:
+    name: "{{ user.name }}"
+  become: true
+
+# Create directory
+- name: Creates directory
+  ansible.builtin.file:
+    path: "{{artifact.path}}"
+    state: "directory"
+    mode: "0775"
+    owner: "{{ user.name }}"
+  become: true
+
+## Clear old file
+#- name: Clear old file jar
+#  file:
+#    path: "{{artifact.path+artifact.name}}"
+#    state: absent
+#  become: true
+
+# Download artifact from Nexus
+- name: Download artifact from Nexus
+  ansible.builtin.maven_artifact:
+    dest: "{{artifact.path+artifact.name}}"
+    repository_url: "{{nexus.repository_url}}"
+    group_id: "{{nexus.group_id}}"
+    artifact_id: "{{nexus.artifact_id}}"
+    version: "{{nexus.version}}"
+    username: "{{nexus_username}}"
+    password: "{{nexus_password}}"
+    mode: "0755"
+  become: true
+
+# Create sauage-store-backend.service
+- name: Create sauage-store-backend.service
+  ansible.builtin.template:
+    src: sausage-store-backend.service.j2
+    dest: "/etc/systemd/system/{{service.name}}.service"
+  become: true
+
+# Update systemd
+- name: Update Systemd
+  ansible.builtin.systemd:
+    daemon_reload: yes
+  become: true
+
+# Run Backend
+- name: Run Backend
+  ansible.builtin.service:
+    name: "{{service.name}}"
+    state: restarted
+  register: backend_service_status
+  become: true
+
+- debug:
+    var: backend_service_status.status.ActiveState
