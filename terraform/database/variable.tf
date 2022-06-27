@@ -32,7 +32,6 @@ variable "database_username" {
   description = "Username of database administrator"
   type        = string
   sensitive   = true
-  default     = "db-service"
 }
 
 variable "database_name" {
@@ -45,6 +44,5 @@ variable "database_password" {
   description = "Password of database administrator"
   type        = string
   sensitive   = true
-  default     = "qWerty123"
 }
 

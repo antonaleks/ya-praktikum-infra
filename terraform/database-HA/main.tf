@@ -29,7 +29,7 @@ resource "yandex_mdb_postgresql_user" "admin" {
   cluster_id = yandex_mdb_postgresql_cluster.vm-postgres-HA.id
   name       = var.database_username
   password   = var.database_password
-  conn_limit = 4
+  conn_limit = 50
   settings = {
     default_transaction_isolation = "read committed"
     log_min_duration_statement    = 5000
