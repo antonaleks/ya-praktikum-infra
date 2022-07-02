@@ -36,6 +36,20 @@ resource "yandex_mdb_postgresql_user" "admin" {
   }
 }
 
+resource "random_password" "password" {
+  count            = length(var.database_user_list)
+  length           = 8
+  special          = true
+  override_special = "_%@"
+}
+
+resource "yandex_mdb_postgresql_user" "new_user" {
+  count      = length(var.database_user_list)
+  cluster_id = yandex_mdb_postgresql_cluster.vm-postgres-HA.id
+  name       = var.database_user_list[count.index]
+  password   = random_password.password[count.index].result
+}
+
 resource "yandex_mdb_postgresql_database" "database" {
   cluster_id = yandex_mdb_postgresql_cluster.vm-postgres-HA.id
   name       = var.database_name
@@ -47,8 +61,20 @@ resource "yandex_mdb_postgresql_database" "database" {
 resource "local_file" "ansible_inventory" {
   content = templatefile("../resources/.env.tmpl",
     {
-      PSQL_ADMIN    = yandex_mdb_postgresql_user.admin.name,
-      PSQL_PASSWORD = yandex_mdb_postgresql_user.admin.password,
+      PSQL_ADMIN    = yandex_mdb_postgresql_user.new_user[0].name,
+      PSQL_PASSWORD = yandex_mdb_postgresql_user.new_user[0].password,
+      PSQL_HOST     = "c-${yandex_mdb_postgresql_cluster.vm-postgres-HA.id}.rw.mdb.yandexcloud.net",
+      PSQL_DBNAME   = yandex_mdb_postgresql_database.database.name
+    }
+  )
+  filename = "data/.env"
+}
+
+resource "local_file" "users_password" {
+  content = templatefile("../resources/.env.tmpl",
+    {
+      PSQL_ADMIN    = yandex_mdb_postgresql_user.new_user[0].name,
+      PSQL_PASSWORD = yandex_mdb_postgresql_user.new_user[0].password,
       PSQL_HOST     = "c-${yandex_mdb_postgresql_cluster.vm-postgres-HA.id}.rw.mdb.yandexcloud.net",
       PSQL_DBNAME   = yandex_mdb_postgresql_database.database.name
     }

@@ -52,3 +52,8 @@ variable "database_password" {
   sensitive   = true
 }
 
+variable "database_user_list" {
+  description = "User list"
+  type        = list(string)
+  default     = ["admin_user", "read_user", "write_user"]
+}
