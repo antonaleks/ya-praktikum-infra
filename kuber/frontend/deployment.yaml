@@ -1,0 +1,52 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    app: frontend
+spec:
+  strategy:
+    type: Recreate
+  # селектор, который выбирает Pod'ы, попадающие под управление RC (Replication Controller)
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    # шаблон для создания Pod'ов
+    spec:
+      containers:
+        - image: gitlab.praktikum-services.ru:5050/anton-alekseyev/sausage-store/sausage-frontend:latest
+          name: frontend
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "200m"
+          env:
+            - name: BACKEND_URL
+              value: "http://localhost/api"
+          ports:
+            - name: frontend
+              containerPort: 80
+          volumeMounts:
+            - name: nginx-conf
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: nginx.conf
+              readOnly: true
+      volumes:
+        - name: nginx-conf
+          configMap:
+            name: nginx-conf
+            items:
+              - key: nginx.conf
+                path: nginx.conf
+      # чтобы кубер мог скачивать образы из нашего GitLab Registry
+      imagePullSecrets:
+        - name: docker-config-secret

@@ -1,0 +1,80 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  labels:
+    app: backend
+spec:
+  # желаемое количество реплик Pod'а
+  replicas: 3
+  strategy:
+    type: Recreate
+  # селектор, который выбирает Pod'ы, попадающие под управление RC (Replication Controller)
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    # шаблон для создания Pod'ов
+    spec:
+      containers:
+        - image: gitlab.praktikum-services.ru:5050/anton-alekseyev/sausage-store/sausage-backend:latest
+          name: backend
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: VAULT_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: vault
+                  key: vault_host
+            - name: VAULT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: vault
+                  key: vault_token
+            - name: POSTGRES_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: postgres_host
+            - name: POSTGRES_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: postgres_port
+            - name: POSTGRES_DBNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: postgres_dbname
+            - name: SPRING_DATASOURCE_URL
+#              value: "jdbc:postgresql://rc1b-9en1ut5krdacsvc7.mdb.yandexcloud.net:6432/gorlym2699"
+              value: "jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DBNAME}"
+            - name: BACKEND_PORT
+              value: "8080"
+            - name: SPRING_FLYWAY_BASELINE
+              value: "true"
+          ports:
+            - name: backend
+              containerPort: 8080
+          livenessProbe:
+            # проверка живучести выполнит запрос HTTP GET
+            httpGet:
+              # путь к запросу в HTTP-запросе
+              path: /actuator/health
+              # порт, к которому должна подключиться проверка
+              port: 8080
+            # перед исполнением первой проверки подождать 15 секунд, пока стартанёт бэкенд
+            initialDelaySeconds: 15
+            # период выполнения проверки
+            periodSeconds: 30
+            # максимальное время выполнения проверки (по умолчанию 1 раз)
+            timeoutSeconds: 2
+            # сколько раз пробовать попытку, если она провалилась (по умолчанию 1 раз)
+            failureThreshold: 6
+      # чтобы кубер мог скачивать образы из нашего GitLab Registry
+      imagePullSecrets:
+        - name: docker-config-secret
