@@ -71,4 +71,3 @@
 
 - debug:
     var: frontend_service_status.status.ActiveState
-
