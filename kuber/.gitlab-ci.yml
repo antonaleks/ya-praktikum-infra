@@ -1,0 +1,19 @@
+stages:
+  - deploy
+
+deploy-docker:
+  stage: deploy
+  image: bitnami/kubectl:1.24.3
+  environment:
+    name: dev
+    url: $SAUSAGE_STORE_URL
+  before_script:
+    - mkdir -p $HOME/.kube
+    - echo -n $KUBE_CONFIG | base64 -d > $HOME/.kube/config
+    - kubectl config view
+  script:
+    - cd kuber
+    - kubectl apply -f secrets.yaml
+    - kubectl apply -f backend -f backend-report -f frontend
+  after_script:
+    - rm $HOME/.kube/config
