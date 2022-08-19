@@ -3,6 +3,7 @@ repos:
     rev: v4.1.0
     hooks:
     -   id: check-yaml
+        args: ["--allow-multiple-documents"]
     -   id: check-added-large-files
     -   id: trailing-whitespace
 
