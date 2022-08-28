@@ -15,9 +15,7 @@ upload-helm:
   script:
     - cd sausage-store-chart
     - helm package --version $VERSION ./
-    - ls -l
-    - chmod 660 sausage-store-${VERSION}.tar.gz
-    - curl -u "${NEXUS_REPO_USER}:$(echo $NEXUS_REPO_PASS | base64 -d)" ${NEXUS_REPO_HELM_URL} --upload-file sausage-store-${VERSION}.tar.gz
+    - curl -u "${NEXUS_REPO_USER}:$(echo $NEXUS_REPO_PASS | base64 -d)" ${NEXUS_REPO_HELM_URL} --upload-file sausage-store-${VERSION}.tgz
 
   after_script:
     - rm $HOME/.kube/config
