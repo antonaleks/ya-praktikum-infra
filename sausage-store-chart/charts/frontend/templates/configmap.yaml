@@ -5,7 +5,7 @@ metadata:
   name: nginx-conf-{{ .Release.Name }}
   namespace: "{{ .Release.Namespace }}"
   labels:
-    {{ - include "sausage-store.labels" . | nindent 4 }}
+    {{- include "sausage-store.labels" . | nindent 4 }}
 data:
   nginx.conf: |
     server {
