@@ -10,3 +10,13 @@ kubernetes:
   only:
     changes:
       - kuber/**/*
+
+helm:
+  stage: module-pipelines
+  trigger:
+    include:
+      - "/sausage-store-chart/.gitlab-ci.yml"
+    strategy: depend
+  only:
+    changes:
+      - sausage-store-chart/**/*
