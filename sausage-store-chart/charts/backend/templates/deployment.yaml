@@ -59,11 +59,11 @@ spec:
               value: "{{ .Values.global.springFlywayBaseline }}"
           ports:
             - name: backend
-              containerPort: {{ .Values.global.backendPort }}
+              containerPort: {{ .Values.global.backendPort | int }}
           livenessProbe:
             httpGet:
               path: /actuator/health
-              port: {{ .Values.global.backendPort }}
+              port: {{ .Values.global.backendPort | int }}
             initialDelaySeconds: 15
             periodSeconds: 30
             timeoutSeconds: 2

@@ -14,6 +14,6 @@ data:
       }
 
       location /api {
-          proxy_pass http://sausage-backend:{{ .Values.global.backendPort }};
+          proxy_pass http://sausage-backend:{{ .Values.global.backendPort | int }};
       }
     }
