@@ -1,0 +1,15 @@
+apiVersion: v2
+type: application
+name: sausage-store
+description: Sausage Store Helm Chart
+
+version: 0.1.1
+appVersion: "latest"
+
+dependencies:
+  - name: backend
+    version: 0.1.1
+  - name: backend-report
+    version: 0.1.1
+  - name: frontend
+    version: 0.1.1

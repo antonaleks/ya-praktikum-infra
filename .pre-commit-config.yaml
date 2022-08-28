@@ -1,11 +1,19 @@
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.1.0
     hooks:
-    -   id: check-yaml
-        args: ["--allow-multiple-documents"]
-    -   id: check-added-large-files
-    -   id: trailing-whitespace
-    -   id: end-of-file-fixer
-    -   id: check-added-large-files
-    -   id: detect-private-key
+      - id: check-yaml
+        args: [ "--allow-multiple-documents" ]
+        exclude: ^sausage-store-chart
+      - id: check-added-large-files
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-added-large-files
+      - id: detect-private-key
+
+  - repo: https://github.com/gruntwork-io/pre-commit
+    rev: v0.1.17
+    hooks:
+      - id: terraform-fmt
+      - id: terraform-validate
+      - id: tflint
