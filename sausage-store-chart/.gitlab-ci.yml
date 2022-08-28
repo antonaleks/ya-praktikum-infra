@@ -11,7 +11,7 @@ upload-helm:
   before_script:
     - mkdir -p $HOME/.kube
     - echo -n $KUBE_CONFIG | base64 -d > $HOME/.kube/config
-    - apk add --update \ curl
+    - apk --no-cache add curl
   script:
     - cd sausage-store-chart
     - helm package --version $VERSION ./
