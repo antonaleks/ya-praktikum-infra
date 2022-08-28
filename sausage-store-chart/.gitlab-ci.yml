@@ -31,7 +31,7 @@ deploy-helm:
     - mkdir -p $HOME/.kube
     - echo -n $KUBE_CONFIG | base64 -d > $HOME/.kube/config
   script:
-    - helm repo add nexus $NEXUS_REPO_HELM_URL --username ${NEXUS_REPO_USER} --password $(echo $NEXUS_REPO_PASS | base64 -d)"
+    - helm repo add nexus $NEXUS_REPO_HELM_URL --username ${NEXUS_REPO_USER} --password $(echo $NEXUS_REPO_PASS | base64 -d)
     - helm repo update
     - helm upgrade --install sausage-store \
       --set environment=test \
