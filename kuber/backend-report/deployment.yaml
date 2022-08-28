@@ -6,6 +6,7 @@ metadata:
   labels:
     app: backend-report
 spec:
+  revisionHistoryLimit: 15
   strategy:
     type: Recreate
   selector:
@@ -15,7 +16,6 @@ spec:
     metadata:
       labels:
         app: backend-report
-    # шаблон для создания Pod'ов
     spec:
       containers:
         - image: gitlab.praktikum-services.ru:5050/anton-alekseyev/sausage-store/sausage-backend-report:latest
@@ -33,20 +33,12 @@ spec:
                   name: vault
                   key: vault_token
           livenessProbe:
-            # проверка живучести выполнит запрос HTTP GET
             httpGet:
-              # путь к запросу в HTTP-запросе
               path: /actuator/health
-              # порт, к которому должна подключиться проверка
               port: 8080
-            # перед исполнением первой проверки подождать 15 секунд, пока стартанёт бэкенд
             initialDelaySeconds: 15
-            # период выполнения проверки
             periodSeconds: 30
-            # максимальное время выполнения проверки (по умолчанию 1 раз)
             timeoutSeconds: 2
-            # сколько раз пробовать попытку, если она провалилась (по умолчанию 1 раз)
             failureThreshold: 6
-      # чтобы кубер мог скачивать образы из нашего GitLab Registry
       imagePullSecrets:
         - name: docker-config-secret

@@ -6,9 +6,9 @@ metadata:
   labels:
     app: frontend
 spec:
+  revisionHistoryLimit: 15
   strategy:
     type: Recreate
-  # селектор, который выбирает Pod'ы, попадающие под управление RC (Replication Controller)
   selector:
     matchLabels:
       app: frontend
@@ -16,8 +16,16 @@ spec:
     metadata:
       labels:
         app: frontend
-    # шаблон для создания Pod'ов
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - frontend
       containers:
         - image: gitlab.praktikum-services.ru:5050/anton-alekseyev/sausage-store/sausage-frontend:latest
           name: frontend
@@ -47,6 +55,5 @@ spec:
             items:
               - key: nginx.conf
                 path: nginx.conf
-      # чтобы кубер мог скачивать образы из нашего GitLab Registry
       imagePullSecrets:
         - name: docker-config-secret
