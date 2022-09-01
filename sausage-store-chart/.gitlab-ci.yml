@@ -69,14 +69,17 @@ deploy-argocd:
     - >
       argocd --grpc-web --auth-token $ARGO_TOKEN \
             --server $ARGO_SERVER app set anton-alekseyev \
-            --p environment=test \
-            --p frontend.fqdn=${SAUSAGE_STORE_URL} \
-            --p secrets.vaultToken=${VAULT_TOKEN}\
-            --p secrets.vaultHost=${VAULT_HOST} \
-            --p secrets.postgresHost=${PSQL_HOST}\
-            --p secrets.postgresPort=${PSQL_PORT}\
-            --p secrets.postgresDBName=${PSQL_DBNAME}\
-            --p secrets.dockerConfigJson=${DOCKER_CONFIG_JSON}
+            -p environment=test \
+            -p frontend.fqdn=${SAUSAGE_STORE_URL} \
+            -p secrets.vaultToken=${VAULT_TOKEN}\
+            -p secrets.vaultHost=${VAULT_HOST} \
+            -p secrets.postgresHost=${PSQL_HOST}\
+            -p secrets.postgresPort=${PSQL_PORT}\
+            -p secrets.postgresDBName=${PSQL_DBNAME}\
+            -p secrets.dockerConfigJson=${DOCKER_CONFIG_JSON} \
+            -p backend.image.tag=${BACKEND_DOCKER_TAG} \
+            -p frontend.image.tag=${FRONTEND_DOCKER_TAG} \
+            -p backend-report.image.tag=${BACKEND_REPORT_DOCKER_TAG}
     - argocd --grpc-web --auth-token $ARGO_TOKEN --server $ARGO_SERVER app sync anton-alekseyev
   after_script:
     - rm $HOME/.kube/config
