@@ -80,6 +80,6 @@ deploy-argocd:
             -p backend.image.tag=${BACKEND_DOCKER_TAG} \
             -p frontend.image.tag=${FRONTEND_DOCKER_TAG} \
             -p backend-report.image.tag=${BACKEND_REPORT_DOCKER_TAG}
-    - argocd --grpc-web --auth-token $ARGO_TOKEN --server $ARGO_SERVER app sync anton-alekseyev
+    - argocd --grpc-web --auth-token $ARGO_TOKEN --server $ARGO_SERVER app sync $ARGO_APP
   after_script:
     - rm $HOME/.kube/config
