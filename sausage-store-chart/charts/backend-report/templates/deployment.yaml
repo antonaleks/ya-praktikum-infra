@@ -19,7 +19,7 @@ spec:
         app: "{{ .Values.name }}"
     spec:
       containers:
-        - image: {{ .Values.global.imageRegistry }}/{{ .Values.imageName }}:{{ .Chart.AppVersion }}
+        - image: {{ .Values.global.imageRegistry }}/{{ .Values.imageName }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           name: "{{ .Values.name }}"
           imagePullPolicy: IfNotPresent
           env:

@@ -20,7 +20,7 @@ upload-helm:
   after_script:
     - rm $HOME/.kube/config
 
-deploy-helm:
+.deploy-helm:
   stage: deploy
   image: lwolf/helm-kubectl-docker:v1.21.1-v3.6.0
   rules:
@@ -48,5 +48,35 @@ deploy-helm:
         --set secrets.dockerConfigJson=${DOCKER_CONFIG_JSON} \
         --atomic --timeout 15m \
           nexus/sausage-store
+  after_script:
+    - rm $HOME/.kube/config
+
+deploy-argocd:
+  stage: deploy
+  image: argoproj/argocd:v2.3.3
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: manual
+    - when: on_success
+  environment:
+    name: dev-helm
+    url: https://$SAUSAGE_STORE_URL
+  before_script:
+    - mkdir -p $HOME/.kube
+    - echo -n $KUBE_CONFIG | base64 -d > $HOME/.kube/config
+    - echo $ARGO_TOKEN
+  script:
+    - >
+      argocd --grpc-web --auth-token $ARGO_TOKEN \
+            --server $ARGO_SERVER app set anton-alekseyev \
+            --p environment=test \
+            --p frontend.fqdn=${SAUSAGE_STORE_URL} \
+            --p secrets.vaultToken=${VAULT_TOKEN}\
+            --p secrets.vaultHost=${VAULT_HOST} \
+            --p secrets.postgresHost=${PSQL_HOST}\
+            --p secrets.postgresPort=${PSQL_PORT}\
+            --p secrets.postgresDBName=${PSQL_DBNAME}\
+            --p secrets.dockerConfigJson=${DOCKER_CONFIG_JSON}
+    - argocd --grpc-web --auth-token $ARGO_TOKEN --server $ARGO_SERVER app sync anton-alekseyev
   after_script:
     - rm $HOME/.kube/config
