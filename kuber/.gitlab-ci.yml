@@ -4,6 +4,7 @@ stages:
 deploy-kuber:
   stage: deploy
   image: bitnami/kubectl:1.24.3
+  when: manual
   environment:
     name: dev
     url: https://$SAUSAGE_STORE_URL
