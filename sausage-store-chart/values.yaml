@@ -1,0 +1,61 @@
+secrets:
+  vaultToken: ""
+  vaultHost: ""
+  postgresHost: ""
+  postgresPort: ""
+  postgresDBName: ""
+  dockerConfigJson: ""
+
+
+global:
+  springDatasourceUrl: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DBNAME}
+  backendPort: 8080
+  springFlywayBaseline: true
+  appName: sausage-store
+  environment: test
+  imageRegistry: gitlab.praktikum-services.ru:5050/anton-alekseyev/sausage-store
+
+backend:
+  name: sausage-backend
+  revisionHistoryLimit: 15
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 2
+      maxSurge: 20%
+  imageName: "sausage-backend"
+  vpa:
+    updateMode: "Auto"
+    resources:
+      minAllowed:
+        cpu: 0m
+        memory: 0Mi
+      maxAllowed:
+        cpu: 1
+        memory: 500Mi
+
+backend-report:
+  name: sausage-backend-report
+  revisionHistoryLimit: 15
+  replicas: 3
+  imageName: "sausage-backend-report"
+  hpa:
+    resources:
+      minReplicas: 1
+      maxReplicas: 5
+      averageUtilization: 75
+
+frontend:
+  name: sausage-frontend
+  fqdn: "05-anton-alekseev.k8s.praktikum-services.tech"
+  port: 80
+  replicas: 1
+  imageName: "sausage-frontend"
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "100m"
+    limits:
+      memory: "128Mi"
+      cpu: "200m"

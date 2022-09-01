@@ -1,0 +1,52 @@
+stages:
+  - release
+  - deploy
+
+variables:
+  VERSION: 0.1.${CI_PIPELINE_ID}
+
+upload-helm:
+  stage: release
+  image: lwolf/helm-kubectl-docker:v1.21.1-v3.6.0
+  before_script:
+    - mkdir -p $HOME/.kube
+    - echo -n $KUBE_CONFIG | base64 -d > $HOME/.kube/config
+    - apk --no-cache add curl
+  script:
+    - cd sausage-store-chart
+    - helm package --version $VERSION ./
+    - curl -u "${NEXUS_REPO_USER}:$(echo $NEXUS_REPO_PASS | base64 -d)" ${NEXUS_REPO_HELM_URL} --upload-file sausage-store-${VERSION}.tgz
+
+  after_script:
+    - rm $HOME/.kube/config
+
+deploy-helm:
+  stage: deploy
+  image: lwolf/helm-kubectl-docker:v1.21.1-v3.6.0
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: manual
+    - when: on_success
+  environment:
+    name: dev-helm
+    url: https://$SAUSAGE_STORE_URL
+  before_script:
+    - mkdir -p $HOME/.kube
+    - echo -n $KUBE_CONFIG | base64 -d > $HOME/.kube/config
+  script:
+    - helm repo add nexus $NEXUS_REPO_HELM_URL --username ${NEXUS_REPO_USER} --password $(echo $NEXUS_REPO_PASS | base64 -d)
+    - helm repo update
+    - >
+      helm upgrade --install sausage-store \
+        --set environment=test \
+        --set frontend.fqdn=${SAUSAGE_STORE_URL} \
+        --set secrets.vaultToken=${VAULT_TOKEN}\
+        --set secrets.vaultHost=${VAULT_HOST} \
+        --set secrets.postgresHost=${PSQL_HOST}\
+        --set secrets.postgresPort=${PSQL_PORT}\
+        --set secrets.postgresDBName=${PSQL_DBNAME}\
+        --set secrets.dockerConfigJson=${DOCKER_CONFIG_JSON} \
+        --atomic --timeout 15m \
+          nexus/sausage-store
+  after_script:
+    - rm $HOME/.kube/config
