@@ -68,7 +68,7 @@ deploy-argocd:
   script:
     - >
       argocd --grpc-web --auth-token $ARGO_TOKEN \
-            --server $ARGO_SERVER app set anton-alekseyev \
+            --server $ARGO_SERVER app set $ARGO_APP \
             -p environment=test \
             -p frontend.fqdn=${SAUSAGE_STORE_URL} \
             -p secrets.vaultToken=${VAULT_TOKEN}\
