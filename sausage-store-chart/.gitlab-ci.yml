@@ -66,9 +66,10 @@ deploy-argocd:
     - echo -n $KUBE_CONFIG | base64 -d > $HOME/.kube/config
     - echo $ARGO_TOKEN
   script:
+    - argocd --grpc-web --auth-token $ARGO_TOKEN --server $ARGO_SERVER app patch $ARGO_APP --patch '{"spec": { "source": { "targetRevision": $VERSION } } }' --type merge
     - >
       argocd --grpc-web --auth-token $ARGO_TOKEN \
-            --server $ARGO_SERVER app set $ARGO_APP --helm-version $VERSION \
+            --server $ARGO_SERVER app set $ARGO_APP \
             -p environment=test \
             -p frontend.fqdn=${SAUSAGE_STORE_URL} \
             -p secrets.vaultToken=${VAULT_TOKEN}\
