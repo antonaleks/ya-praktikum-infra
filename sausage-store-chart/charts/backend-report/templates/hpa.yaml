@@ -1,16 +1,16 @@
 apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: "{{ .Values.name }}"
+  name: "{{ .Chart.Name }}-{{ .Release.Name }}"
   labels:
-    app: "{{ .Values.name }}"
+    app: "{{ .Chart.Name }}-{{ .Release.Name }}"
 spec:
   minReplicas: {{ .Values.hpa.resources.minReplicas }}
   maxReplicas: {{ .Values.hpa.resources.maxReplicas }}
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: "{{ .Values.name }}"
+    name: "{{ .Chart.Name }}-{{ .Release.Name }}"
   metrics:
     - type: Resource
       resource:

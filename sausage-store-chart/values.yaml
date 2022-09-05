@@ -24,7 +24,9 @@ backend:
     rollingUpdate:
       maxUnavailable: 2
       maxSurge: 20%
-  imageName: "sausage-backend"
+  image:
+    name: "sausage-backend"
+    tag: "1.0.131247"
   vpa:
     updateMode: "Auto"
     resources:
@@ -39,7 +41,9 @@ backend-report:
   name: sausage-backend-report
   revisionHistoryLimit: 15
   replicas: 3
-  imageName: "sausage-backend-report"
+  image:
+    name: "sausage-backend-report"
+    tag: "1.0.131245"
   hpa:
     resources:
       minReplicas: 1
@@ -51,7 +55,9 @@ frontend:
   fqdn: "05-anton-alekseev.k8s.praktikum-services.tech"
   port: 80
   replicas: 1
-  imageName: "sausage-frontend"
+  image:
+    name: "sausage-frontend"
+    tag: "1.0.131246"
   resources:
     requests:
       memory: "64Mi"

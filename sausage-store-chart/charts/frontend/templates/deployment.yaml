@@ -28,7 +28,7 @@ spec:
                     values:
                       - frontend
       containers:
-        - image: {{ .Values.global.imageRegistry }}/{{ .Values.imageName }}:{{ .Chart.AppVersion }}
+        - image: {{ .Values.global.imageRegistry }}/{{ .Values.image.name }}:{{ .Values.image.tag | default .Chart.AppVersion }}
           name: "{{ .Values.name }}"
           imagePullPolicy: IfNotPresent
           resources:
