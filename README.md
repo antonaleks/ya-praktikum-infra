@@ -1,3 +1,6 @@
+# Курс Яндекс.Практикум DevOps для эксплуатации и разработки
+Данный репозиторий содержит инфраструктурный код, использованный в рамках курса от Яндекс Практикума.
+[Тут](https://github.com/antonaleks/ya-praktikum-app) лежит репозиторий приложения.
 # Get started with the terraform
 ```shell
 cd terraform/sausage-store
@@ -16,22 +19,13 @@ ansible-playbook playbook -i inventory
 ```
 you need to insert nexus repo login/password to console after run playbook
 
-# Databases clusters
-```yaml
-- db_type: single
-  hostname: rc1a-n5tu7pmc383z1kuw.mdb.yandexcloud.net
-  port: 6432
-  user:
-    name: db-service
-    password: qWerty123
-  db_name: sausage-store-db
-- db_type: cluster
-  hostname:
-    - rc1a-dvctnks1cgkfj40s.mdb.yandexcloud.net
-    - rc1b-ikc20hb1iavqfgem.mdb.yandexcloud.net
-  port: 6432
-  user:
-    name: db-service
-    password: qWerty123
-  db_name: sausage-store-db
+# Get started with Kubernetes
+You need to export KUBE_CONFIG
+```shell
+kubectl apply -f backend backend-report frontend
+```
+# Get started with Helm
+You need to export KUBE_CONFIG
+```shell
+helm install sausage-store ./sausage-store-chart
 ```
